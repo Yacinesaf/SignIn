@@ -12,12 +12,16 @@ class SingIn extends Component {
   constructor() {
     super()
     this.state = {
-      showingPassword : false,
-      centered : {
+      showingPassword: false,
+      email: 'test@gmail.com',
+      password: 'testooo',
+      checkBoxChecked: false,
+      centered: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       },
+
     }
   }
 
@@ -39,71 +43,100 @@ class SingIn extends Component {
       obj[types[type] + 'Top'] = val
       obj[types[type] + 'Bottom'] = val
     }
-    console.log(obj)
     return obj
   }
 
-// showingPassword ? <VisibilityIcon /> : <VisibilityOffIcon />
-render() {
-  const { centered, showingPassword } = this.state;
-  return (
-    <div style={{ background: 'linear-gradient(to right, #1d4350, #a43931)', height: "100vh" }}>
+  validateEmail = (email) => {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
 
-      <Grid container direction="row" justify='center' alignItems="center" style={{ height: '100%' }}>
+  handleChangeEventEmail = (event) => {
+    this.setState({
+      email: event.target.value,
+    });
+  }
 
-        <Grid 
-        item xs={11} sm={8} lg={6} xl={3}>
+  handleChangeEventPass = (event) => {
+    this.setState({
+      password: event.target.value,
+    });
+  }
 
-          <Card style={Object.assign({}, centered, this.space('p','a','32'), this.space('m','x','auto'), {maxWidth : '365px'})} elevation={10}>
 
-            <Avatar style={Object.assign({ backgroundColor: pink[500] }, this.space('m', 'b', 12))}  >
-              <LockOutlinedIcon />
-            </Avatar>
+  render() {
+    const { centered, showingPassword, checkBoxChecked } = this.state;
+    return (
+      <div style={{ background: 'linear-gradient(to right, #1d4350, #a43931)', height: "100vh" }}>
 
-            <Typography align='center' variant='h5'>
-              Sign In
+        <Grid container direction="row" justify='center' alignItems="center" style={{ height: '100%' }}>
+
+          <Grid
+            item xs={11} sm={8} lg={6} xl={3}>
+
+            <Card style={Object.assign({}, centered, this.space('p', 'a', '32'), this.space('m', 'x', 'auto'), { maxWidth: '365px' })} elevation={10}>
+
+              <Avatar style={Object.assign({ backgroundColor: pink[500] }, this.space('m', 'b', 12))}  >
+                <LockOutlinedIcon />
+              </Avatar>
+
+              <Typography align='center' variant='h5'>
+                Sign In
             </Typography>
 
-            <form style={{ width: '100%' }}>
+              <form style={{ width: '100%' }}>
 
-              <TextField id="outlined-basic" style={this.space('m', 'y', 24)} fullWidth={true} label="Email Address*" variant="outlined" />
+                <TextField
+                  error={this.validateEmail(this.state.email) ? false : true}
+                  helperText={this.validateEmail(this.state.email) ? '' : 'Incorrect entry'}
+                  onChange={this.handleChangeEventEmail}
+                  id="outlined-basic"
+                  style={this.space('m', 'y', 24)}
+                  fullWidth={true} label="Email Address"
+                  variant="outlined" />
 
-              <TextField
+                <TextField
+                  onChange={this.handleChangeEventPass}
+                  error={this.state.password.length < 6 ? true : false}
+                  helperText={this.state.password.length < 6 ? 'Not enough characters' : ''}
+                  InputProps={{
+                    endAdornment: <InputAdornment onClick={() => this.setState({ showingPassword: !showingPassword })}>
+                      {showingPassword
+                        ? <VisibilityOffIcon />
+                        : <VisibilityIcon />}
+                    </InputAdornment>
+                  }}
+                  type={showingPassword ? 'text' : 'password'}
+                  id="outlined-basic"
+                  style={this.space('m', 'b', 24)}
+                  fullWidth={true} label="Password"
+                  variant="outlined" />
 
+                <FormControlLabel
+                  onClick={() => this.setState({ checkBoxChecked: !checkBoxChecked })}
+                  style={this.space('m', 'b', 24)}
+                  control={<Checkbox color="primary" />}
+                  label="Accept the terms & conditions" />
 
-                InputProps={{ endAdornment: <InputAdornment onClick={() => this.setState({showingPassword: !showingPassword})}>
-                {showingPassword 
-                  ? <VisibilityOffIcon />
-                  : <VisibilityIcon /> }
-                </InputAdornment> }}
-                type={showingPassword ? 'text' : 'password'}
-                id="outlined-basic"
-                style={this.space('m', 'b', 24)}
-                fullWidth={true} label="Password*"
-                variant="outlined" />
+              </form>
 
-              <FormControlLabel style={this.space('m', 'b', 24)}
-                control={
-                  <Checkbox
-                    value="true"
-                    color="primary"
-                  />}
-                label="Remember me"/>
-
-            </form>
-
-              <Button fullWidth={true} variant="contained" color="primary" size='large'>
+              <Button
+                disabled={checkBoxChecked ? false : true}  
+                fullWidth={true}
+                variant="contained"
+                color="primary"
+                size='large'>
                 Sign In
               </Button>
 
-          </Card>
+            </Card>
+
+          </Grid>
 
         </Grid>
 
-      </Grid>
-
-    </div>
-  )
-}
+      </div>
+    )
+  }
 }
 export default SingIn
